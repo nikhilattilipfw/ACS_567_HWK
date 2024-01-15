@@ -55,7 +55,13 @@ class DataManager:
         
         print("Loaded Data:")
         self.print_data()
-
+        
+    def load_data(self):
+        # Loads data from the CSV file and stores it in the data list
+        with open(self.filename, 'r') as file:
+            reader = csv.DictReader(file)
+            self.data = [FoodData(**row) for row in reader]
+            
     def save_data(self):
         # Saves the current data list to the CSV file
         with open(self.filename, 'w', newline='') as file:
@@ -108,6 +114,7 @@ class DataManager:
 
     def filter_data(self, field, value):
         # Filters the data list based on a specified value of a nutritional field
+        self.load_data()
         return [item for item in self.data if getattr(item, field) == value]
 
     def print_data(self):
