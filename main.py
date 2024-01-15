@@ -67,8 +67,22 @@ class DataManager:
     def add_data(self, food_item, calories, protein, carbs):
         # Adds a new food item to the data list and updates the CSV file
         new_food = FoodData(food_item=food_item, calories=calories, protein=protein, carbs=carbs)
-        self.data.append(new_food)
-        self.save_data()
+        
+        # Check for duplicates before adding
+        with open(self.filename, 'r') as file:
+            reader = csv.DictReader(file)
+            self.data = [FoodData(**row) for row in reader]
+            
+        for item in self.data:
+            if item.food_item!=food_item:
+                self.data.append(new_food)
+                self.save_data()
+                print("Data added successfully.")
+                break
+            else:
+                print("Duplicate data. Data not added.")
+                break
+
 
     def edit_data(self, index, food_item, calories, protein, carbs):
         # Edits an existing food item in the data list and updates the CSV file
@@ -141,7 +155,6 @@ class Application:
                 protein = float(input("Enter Protein: "))
                 carbs = float(input("Enter Carbs: "))
                 self.data_manager.add_data(food_item, calories, protein, carbs)
-                print("Data added successfully.")
 
             elif choice == '3':
                 index = int(input("Enter the index to edit: "))
